@@ -16,3 +16,20 @@ export const instertProductSchema = z.object({
     banner: z.string().nullable(),
     price: currency
 })
+
+// schema for sign in 
+export const signInFormSchema = z.object({
+    email: z.string().email('invalid email address'),
+    password: z.string().min(6, '6 characterrs')
+})
+
+export const signUpFormSchema = z.object({
+    name: z.string().min(3),
+    email: z.string().email('invalid email address'),
+    password: z.string().min(6, '6 characterrs'),
+    confirmPassword: z.string().min(6, '6 characterrs')
+})
+.refine((data) =>  data.password === data.confirmPassword , {
+    message: 'passwords not matching',
+    path: ['confirmPassword']
+})
