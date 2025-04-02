@@ -20,9 +20,7 @@ const calculatePrice = (items: CartItem[]) => {
             : 10
     ),
     taxPrice = round2(0.15 * itemsPrice),
-    totalPrice = round2( 
-         itemsPrice + shippingPrice + taxPrice
-    )
+    totalPrice = round2( itemsPrice + shippingPrice + taxPrice)
 
     return {
         itemsPrice: itemsPrice.toFixed(2),
@@ -151,7 +149,7 @@ export async function getMyCart(){
         ...cart,
         items: cart.items as CartItem[],
         itemsPrice: cart.itemsPrice.toString(),
-        totalPice: cart.totalPrice.toString(),
+        totalPrice: cart.totalPrice.toString(),
         shippingPrice: cart.shippingPrice.toString(),
         taxPrice: cart.taxPrice.toString(),
     })
