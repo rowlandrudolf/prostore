@@ -7,6 +7,7 @@ import type { NextAuthConfig } from 'next-auth';
 // import { cookies } from 'next/headers';
 // import { NextResponse } from 'next/server';
 import { authConfig } from './auth.config';
+import { cookies } from 'next/headers';
 
 export const config: NextAuthConfig = {
     pages: {
@@ -63,20 +64,39 @@ export const config: NextAuthConfig = {
         },
         async jwt({token, user, trigger, session}: any){
             if(user){
+                token.id = user.id
                 token.role = user.role; 
            
                 if(user.name === 'NO_NAME'){
                     token.name = user.email!.split('@')[0];
-
                     await prisma.user.update({
-                        where: {
-                            id: user.id
-                        },
-                        data: {
-                            name: token.name
-                        }
+                        where: { id: user.id },
+                        data: { name: token.name}
                     })
                 }
+            
+                // persist cart on signIn and signUp
+                if(trigger === 'signIn' || trigger === 'signUp'){
+                    const requestCookies = await cookies();
+                    const sessionCartId = requestCookies.get('sessionCartId')?.value;
+                    console.log('auth', sessionCartId)
+                    if(sessionCartId){
+                        const sessionCart = await prisma.cart.findFirst({
+                            where: { sessionCartId }
+                        })
+                        if(sessionCart){
+                            // Delelet current cart
+                            await prisma.cart.deleteMany({
+                                where: { userId: user.id}
+                            })
+                            // assign new cart
+                            await prisma.cart.update({
+                                where: { id: sessionCart.id},
+                                data: { userId: user.id}
+                            })
+                        }
+                    }
+                } 
             }
             return token;
         },

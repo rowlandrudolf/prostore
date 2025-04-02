@@ -55,3 +55,20 @@ export function round2(value: number |  string){
   }
 }
 
+
+const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
+  currency: 'USD',
+  style: 'currency',
+  minimumFractionDigits: 2
+})
+
+export function formatCurrency(ammount: number | string | null) {
+  switch(typeof ammount){
+    case 'number':
+      return CURRENCY_FORMATTER.format(ammount)
+    case 'string':
+      return CURRENCY_FORMATTER.format(Number(ammount))
+    default:
+      return 'Nan'
+  }
+}

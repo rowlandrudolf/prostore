@@ -20,7 +20,7 @@ const calculatePrice = (items: CartItem[]) => {
             : 10
     ),
     taxPrice = round2(0.15 * itemsPrice),
-    totalPrice = round2( itemsPrice + shippingPrice + taxPrice)
+    totalPrice = round2(itemsPrice + shippingPrice + taxPrice)
 
     return {
         itemsPrice: itemsPrice.toFixed(2),
@@ -95,7 +95,7 @@ export async function addItemToCart(data: CartItem) {
 
             // save to db...
             await prisma.cart.update({
-                where: { id: cart.id},
+                where: { id: cart.id },
                 data:{
                     items: cart.items as Prisma.CartUpdateitemsInput[],
                     ...calculatePrice(cart.items as CartItem[])
