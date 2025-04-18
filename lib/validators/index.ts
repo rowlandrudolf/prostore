@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { formatNumberToPrice } from '../utils'
+import { PAYMENT_METHODS } from '../constants'
 
 const currency = z.string().refine((value) => /^\d+(\.\d{2})?$/.test(formatNumberToPrice(Number(value))))
  
@@ -62,4 +63,30 @@ export const shippingAddressSchema = z.object({
     country: z.string().min(3, ''),
     lat: z.number().optional(),
     lng: z.number().optional()
+})
+
+export const paymentMethodSchema = z.object({
+    type: z.string().min(1,'Payment method required')
+}).refine((data) => PAYMENT_METHODS.includes(data.type), {
+    path:['type'],
+    message: 'Invalid payment method'
+})
+
+export const insertOrderSchema = z.object({
+    userId: z.string().min(1, 'required'),
+    itemsPrice: currency,
+    shippingPrice: currency,
+    taxPrice: currency,
+    totalPrice: currency,
+    paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data),{ message: 'Invalide payment method'}),
+    shippingAddress: shippingAddressSchema
+});
+
+export const insertOrderItemSchema = z.object({
+    productId: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    image: z.string(),
+    price: currency,
+    qty: z.number(),
 })
