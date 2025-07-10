@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createOrder } from "@/lib/actions/order.actions";
-import { Check, Loader } from "lucide-react";
+import { Loader, ArrowRightIcon} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 
@@ -25,9 +25,9 @@ const PlaceOrderForm = () => {
                 { pending ? (
                     <Loader className="w-4 h-4 animate-spin"></Loader>
                 ): (
-                    <Check className="w-4 h-4"/> 
+                    <ArrowRightIcon className="w-4 h-4"/> 
                 )}
-                {' '} Place Order
+                {' '} Payment
             </Button>
         )
     }

@@ -77,7 +77,7 @@ export function formatCurrency(ammount: number | string | null) {
 
 // shorten uuid 
 export function formatId(id: string) {
-  return `..${id.substring(id.length - 6)}`
+  return `...${id.substring(id.length - 6)}`
 }
 
 // formate date and times... 

@@ -7,8 +7,56 @@ import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Order } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { 
+    PayPalButtons, 
+    PayPalScriptProvider, 
+    usePayPalScriptReducer 
+} from '@paypal/react-paypal-js'
 
-const OrderDetailsTable = ( { order }: { order: Order}) => {
+import { 
+    createPaypalOrder,
+    approvePaypalOrder 
+} from "@/lib/actions/order.actions";
+
+import { toast } from "sonner";
+
+const OrderDetailsTable = ( 
+{ 
+order, 
+paypalClientId 
+
+}:{ 
+        order: Order, 
+        paypalClientId: string
+}) => {
+
+    console.log(order.id);
+
+    const PrintLoadingState = () => {
+        const [{ isPending, isRejected } ] = usePayPalScriptReducer();
+        let status = '';
+        if(isPending){
+            status = 'Loading Payal'
+        }else if(isRejected){
+            status = 'Error Loading Paypal'
+        }
+        return status 
+    }
+
+    const handleCreatePaypalOrder = async () => {
+        const res = await createPaypalOrder(order.id);
+        if(!res.success){
+            toast('Problemo');
+        }
+
+        return res.data
+    }
+
+    const handleApprovePaypalOrder = async (data: { orderID: string }) => {
+        const res = await approvePaypalOrder(order.id, { orderId: data.orderID });
+        toast(res.message);
+    }
+
     return ( 
         <>
         <h1>Order {formatId(order.id)}</h1>
@@ -19,9 +67,9 @@ const OrderDetailsTable = ( { order }: { order: Order}) => {
                         <h2>Payment method</h2>
                         <p>{order.paymentMethod}</p>
                         {order.isPaid ? (
-                            <Badge variant='secondary' className="bg-amber-950"> Paid at { formatDateTime(order.paidAt!).dateTime}</Badge>
+                            <Badge variant='secondary' className="bg-amber-100"> Paid at { formatDateTime(order.paidAt!).dateTime}</Badge>
                         ) : (
-                            <Badge variant='destructive'  className="bg-amber-950 my-4"> Not Paid </Badge>
+                            <Badge variant='destructive'  className="bg-amber-100 my-4"> Not Paid </Badge>
                         )}
                     </CardContent>
                 </Card>
@@ -32,9 +80,9 @@ const OrderDetailsTable = ( { order }: { order: Order}) => {
                         <p>{order.shippingAddress.streetAddress}, {order.shippingAddress.city}</p>
                         <p>{order.shippingAddress.postalCode}, {order.shippingAddress.country}</p>
                         {order.isDelivered ? (
-                            <Badge variant='secondary' className="bg-amber-950 py-10"> Delivered at { formatDateTime(order.deliveredAt!).dateTime}</Badge>
+                            <Badge variant='secondary' className="bg-amber-400 py-10"> Delivered at { formatDateTime(order.deliveredAt!).dateTime}</Badge>
                         ) : (
-                            <Badge variant='destructive'  className="bg-amber-950 my-3"> Not Delivered </Badge>
+                            <Badge variant='destructive'  className="bg-amber-400 my-3"> Not Delivered </Badge>
                         )}
                     </CardContent>
                 </Card>
@@ -94,7 +142,18 @@ const OrderDetailsTable = ( { order }: { order: Order}) => {
                             <div>Total Price:</div>
                             <div>{formatCurrency(order.totalPrice)}</div>
                         </div>
-              
+                        {/* paypal payment*/}
+                        { !order.isPaid && order.paymentMethod === 'PayPal' && (
+                            <div>
+                                <PayPalScriptProvider options={{clientId: paypalClientId}}>
+                                    <PrintLoadingState/>
+                                    <PayPalButtons 
+                                    createOrder={handleCreatePaypalOrder}
+                                    onApprove={(data) => handleApprovePaypalOrder(data)}
+                                    />
+                                </PayPalScriptProvider>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>
