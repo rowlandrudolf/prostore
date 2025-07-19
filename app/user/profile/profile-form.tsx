@@ -6,7 +6,6 @@ import { updateUserProfile } from "@/lib/actions/user.actions";
 import { updateProfileSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { totalmem } from "os";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
