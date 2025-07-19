@@ -8,7 +8,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-     DropdownMenuTrigger 
+    DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { UserIcon } from "lucide-react";
 
@@ -37,7 +37,7 @@ const UserButton = async () => {
                         </Button>
                     </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-56 bg-gray-100" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
                             <div className="text-sm font-medium leading-none">
@@ -48,6 +48,12 @@ const UserButton = async () => {
                             </div>
                         </div>
                     </DropdownMenuLabel>
+                <DropdownMenuItem>
+                    <Link href='/user/profile' className="w-full">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Link href='/user/orders' className="w-full">Your Orders</Link>
+                </DropdownMenuItem>
                 
                <DropdownMenuItem className="p-0 mb-1">
                     {/* <form action={signOutUser} className="w-full"> */}

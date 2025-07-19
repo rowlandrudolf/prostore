@@ -79,7 +79,7 @@ paypalClientId
                         <p>{order.shippingAddress.fullName}</p>
                         <p>{order.shippingAddress.streetAddress}, {order.shippingAddress.city}</p>
                         <p>{order.shippingAddress.postalCode}, {order.shippingAddress.country}</p>
-                        {order.isDelivered ? (
+                        { order.isDelivered ? (
                             <Badge variant='secondary' className="bg-amber-400 py-10"> Delivered at { formatDateTime(order.deliveredAt!).dateTime}</Badge>
                         ) : (
                             <Badge variant='destructive'  className="bg-amber-400 my-3"> Not Delivered </Badge>

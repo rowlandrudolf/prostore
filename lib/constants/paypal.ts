@@ -8,7 +8,6 @@ export const paypal  = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
@@ -23,7 +22,6 @@ export const paypal  = {
                 ]
             })
         })
-
         return handleResponse(res)
     },
     capturePayment: async function capturePayment(orderId: string){

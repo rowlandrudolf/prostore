@@ -9,7 +9,9 @@ import { hashSync } from "bcrypt-ts-edge";
 import { formatError } from "../utils";
 import { ShippingAddress } from "@/types";
 import { z } from "zod";
+import { PAGE_SIZE } from "../constants";
 // sign in with credentials provider...
+
 
 export async function signInWithCredentials(prevState: unknown, formData: FormData){
     try{
@@ -109,7 +111,6 @@ export async function updateUserAddress(data: ShippingAddress){
             messsage: 'User address updated'
         }
 
-
     }catch(err){
         return {
             success: false,
@@ -139,6 +140,68 @@ export async function updateUserPaymentMethod(data: z.infer<typeof paymentMethod
         return {
             success: true,
             message: 'Payment method updated'
+        }
+
+    }catch(err){
+        return {
+            success: false,
+            message: formatError(err)
+        }
+    }
+}
+
+export async function getUserOrders({
+    limit = PAGE_SIZE, 
+    page
+} : { 
+    limit?: number, 
+    page: number
+}){
+
+    const session = await auth();
+    if(!session) throw new Error('No user')
+
+    const orders = await prisma.order.findMany({
+        where: { userId: session.user!.id },
+        orderBy: { createdAt: 'desc'},
+        take: limit,
+        skip: (page - 1) * limit 
+    })
+
+    const ordersCount =  await prisma.order.count({
+        where: { userId: session.user!.id },
+    })
+
+    return {
+        orders,
+        totalPages: Math.ceil(ordersCount / limit)
+    }
+
+}
+
+
+export async function updateUserProfile(
+    userData: { name: string; email: string;} 
+){
+    try{
+        const session = await auth();
+        const user = await prisma.user.findFirst({
+            where: { id: session?.user?.id }
+        })
+        if(!user) throw new Error('User not found')
+
+        console.log(userData)
+        await prisma.user.update({
+            where: {id: user.id},
+            data: { 
+                name: userData.name,
+                email: userData.email
+            }
+        })
+
+        return {
+            success: true,
+            messsage: 'User profile updated'
         }
 
     }catch(err){
